@@ -1,0 +1,13 @@
+[
+    {
+      "Classification": "flink-conf",
+      "Properties": {
+        "taskmanager.numberOfTaskSlots":"48",
+		"jobmanager.heap.mb":"64768",
+        "taskmanager.memory.fraction":"0.6",
+		"taskmanager.network.memory.fraction":"0.2",
+		"taskmanager.network.numberOfBuffers":"18432",
+		"taskmanager.heap.mb":"38272"
+      }
+    }
+]
