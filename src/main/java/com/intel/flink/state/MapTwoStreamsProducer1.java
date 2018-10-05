@@ -26,7 +26,6 @@ import org.apache.flink.streaming.connectors.kinesis.config.AWSConfigConstants;
 import org.apache.flink.util.Collector;
 
 import com.codahale.metrics.SlidingTimeWindowReservoir;
-import com.codahale.metrics.SlidingWindowReservoir;
 import com.intel.flink.datatypes.CameraTuple;
 import com.intel.flink.datatypes.CameraWithCube;
 import com.intel.flink.datatypes.InputMetadata;

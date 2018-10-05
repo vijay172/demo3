@@ -3,14 +3,12 @@ package com.intel.flink.utils;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.api.java.typeutils.TypeExtractor;
 import org.apache.flink.streaming.connectors.kinesis.serialization.KinesisDeserializationSchema;
 import org.apache.flink.streaming.connectors.kinesis.serialization.KinesisSerializationSchema;
 
 import com.intel.flink.datatypes.CameraTuple;
 import com.intel.flink.datatypes.CameraWithCube;
 import com.intel.flink.datatypes.InputMetadata;
-import com.intel.flink.state.MapTwoStreamsProducer1;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

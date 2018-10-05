@@ -1,7 +1,6 @@
 package com.intel.flink.jni;
 
 import com.intel.proxy.StoragePOC;
-import com.intel.proxy.example;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
