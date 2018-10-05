@@ -324,7 +324,8 @@ public class MapTwoStreamsProducer1 {
                     long beforeCopyImageTS = System.currentTimeMillis();
                     //TODO: make it an async request through NativeLoader- currently synchronous JNI call - not reqd
                     final HashMap<String, Long> cameraWithCubeTimingMap = cameraWithCube.getTimingMap();
-                    long generatedTS = cameraWithCubeTimingMap.get("Generated");
+                    Long generatedTSL = (Long)cameraWithCubeTimingMap.get("Generated");
+                    long generatedTS = generatedTSL != null ? generatedTSL.longValue() : 0l;
                     cameraWithCubeTimingMap.put("BeforeCopyImage", beforeCopyImageTS);
                     long diffOfCopyToGenerated = beforeCopyImageTS - generatedTS;
                     this.beforeCopyDiffGeneratedHistogram.update(diffOfCopyToGenerated);
@@ -345,7 +346,7 @@ public class MapTwoStreamsProducer1 {
                             } else if (checkStrValue.startsWith(OK)) {
                                 String redisHost = checkStrValue.substring(3);
                                 logger.debug("redisHost:{}", redisHost);
-                                cameraWithCube.fileLocation = redisHost;
+                                //TODO:cameraWithCube.fileLocation = redisHost;
                             }
                             long afterCopyImageTS = System.currentTimeMillis();
                             long timeTakenForCopyImage = afterCopyImageTS - beforeCopyImageTS;
@@ -607,7 +608,13 @@ public class MapTwoStreamsProducer1 {
                                     //reduce count by 1 for inputMetadata state
                                     existingInputMetadata.count -= 1;
                                     inputMetadataState.put(existingMetadataKey, existingInputMetadata);
-
+                                    //match InputMetadata.cameraTuple's with cameraWithCube and on matching camera, update fileLocation
+                                    for (CameraTuple cameraTuple: existingInputMetadata.getCameraLst()) {
+                                        if (cameraTuple.getCamera().equalsIgnoreCase(cameraWithCube.cameraKey.cam)) { //matches camera
+                                            cameraTuple.setCamFileLocation(cameraWithCube.fileLocation);
+                                            logger.debug("InputMetadata.cameraTuple matched camera and camFileLocation set to:{}", cameraWithCube.fileLocation);
+                                        }
+                                    }
                                     if (existingInputMetadata.count == 0) {
                                         logger.info("$$$$$[flatMap1] Release Countdown latch with inputMetadata Collecting existingInputMetadata:{}, cameraWithCube:{}", existingInputMetadata, cameraWithCube);
                                         long t = System.currentTimeMillis();
@@ -706,6 +713,8 @@ public class MapTwoStreamsProducer1 {
                                 if (existingInputMetaCamStr != null && existingInputMetaCamStr.equals(cameraKeyCam)) {
                                     //want to keep existing inputMetaData & not remove incoming camera from cameraLst of inputMetadata state
                                     existingInputMetadata.count -= 1;
+                                    //update cameraTuple's camFileLocation for matched CameraWithCube
+                                    existingInputMetaCam.setCamFileLocation(cameraWithCube.fileLocation);
                                 }
                             }
 

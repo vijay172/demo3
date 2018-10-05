@@ -13,7 +13,7 @@ import java.util.Objects;
  */
 public class InputMetadata implements Comparable<InputMetadata> {
     private static final Logger logger = LoggerFactory.getLogger(InputMetadata.class);
-
+    public static final String SEPARATOR = "@";
     public InputMetadata() {
     }
 
@@ -37,13 +37,14 @@ public class InputMetadata implements Comparable<InputMetadata> {
      * @return InputMetadata object
      */
     public static InputMetadata fromString(String line) {
-        String[] tokens = line.split(":");
+        logger.debug("fromString line:{}", line);
+        String[] tokens = line.split(SEPARATOR);
 
         if (tokens.length < 4) {
             throw new RuntimeException("Invalid record: " + line);
         }
         InputMetadata inputMetadata = new InputMetadata();
-        //InputMetadata{inputMetadataKey=InputMetadataKey{ts=1; cube='cu1'}: cameraLst=[CameraTuple{f0=cam1; f1=roi1}]: count=1: timingMap={}
+        //InputMetadata{inputMetadataKey=InputMetadataKey{ts=1; cube='cu1'}: cameraLst=[CameraTuple{f0=cam1; f1=roi1}]: count=1: timingMap={Generated=10, StartTime=11}
         try {
             String firstToken = tokens[0];
             //InputMetadata{inputMetadataKey=InputMetadataKey{ts=1; cube='cu1'}
@@ -70,9 +71,22 @@ public class InputMetadata implements Comparable<InputMetadata> {
             }
             inputMetadata.cameraLst = cameraLst;
             String countStr = tokens[2];
-            int cameraCnt = Integer.parseInt(countStr.substring(7));//count=1
-            inputMetadata.count = cameraCnt;
-        } catch (NumberFormatException nfe) {
+            inputMetadata.count = Integer.parseInt(countStr.substring(7));
+            //timingMap={Generated=10, StartTime=11}
+            String timingMapStr = tokens[3];
+            int firstTimingIdx =  timingMapStr.indexOf("{");
+            int lastTimingIdx = timingMapStr.lastIndexOf("}");
+            String timingMapStrStripped = timingMapStr.substring(firstTimingIdx, lastTimingIdx);
+            String[] timingTokens = timingMapStrStripped.split(",");
+            HashMap<String, Long> timingMapRetrieved = new HashMap<>();
+            for (String timingToken : timingTokens) {
+                String[] timingEachTokenArr = timingToken.split("=");
+                Long timingMapValue = Long.parseLong(timingEachTokenArr[1]);
+                timingMapRetrieved.put(timingEachTokenArr[0], timingMapValue);
+            }
+            inputMetadata.setTimingMap(timingMapRetrieved);
+
+        } catch (NumberFormatException nfe ) {
             throw new RuntimeException("Invalid record: " + line, nfe);
         }
         return inputMetadata;
@@ -201,10 +215,10 @@ public class InputMetadata implements Comparable<InputMetadata> {
     @Override
     public String toString() {
         return "InputMetadata{" +
-                "inputMetadataKey=" + inputMetadataKey +
-                ": cameraLst=" + cameraLst +
-                ": count=" + count +
-                ": timingMap=" + timingMap +
+                "inputMetadataKey=" + inputMetadataKey + SEPARATOR +
+                " cameraLst=" + cameraLst  + SEPARATOR +
+                " count=" + count  + SEPARATOR +
+                " timingMap=" + timingMap  + SEPARATOR +
                 '}';
     }
 

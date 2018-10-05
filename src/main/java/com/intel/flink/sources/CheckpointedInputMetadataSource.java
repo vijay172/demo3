@@ -106,6 +106,9 @@ public class CheckpointedInputMetadataSource implements SourceFunction<InputMeta
                         CameraTuple cameraTuple = new CameraTuple();
                         cameraTuple.setCamera(CAM + camTupleCnt);//uuid
                         cameraTuple.setRoi(ROI + camTupleCnt);//TODO: make it an ROI(x,y,width,height) object
+                        String outputFile1 = fileLocation + "/" + seqCnt + "/" + cameraTuple.getCamera() + ".jpg";
+                        logger.debug("InputMetadata CameraLst - Camera Source fileLocation: {}", outputFile1);
+                        cameraTuple.setCamFileLocation(outputFile1);
                         cameraTupleList.add(cameraTuple);
                     }
                     inputMetadata.setCameraLst(cameraTupleList);

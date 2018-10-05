@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -113,13 +114,20 @@ public class Tuple2KinesisSchema implements KinesisSerializationSchema<Tuple2<In
         List<CameraTuple> cameraLst = new ArrayList<CameraTuple>();
         CameraTuple ct = new CameraTuple("cam1", "roi1","/tmp");
         cameraLst.add(ct);
-        InputMetadata inputMeta = new InputMetadata(1, "cu1", cameraLst);
+        HashMap<String, Long> timingMap = new HashMap<>();
+        timingMap.put("Generated", 10L);
+        timingMap.put("StartTime", 11L);
 
+        InputMetadata inputMeta = new InputMetadata(1, "cu1", cameraLst);
+        inputMeta.setTimingMap(timingMap);
         List<String> cubeLst = new ArrayList<String>();
         cubeLst.add("cu1");
         String fileLocation = "/tmp";
         CameraWithCube camera = new CameraWithCube(1, "cam1", cubeLst, true, fileLocation);
-
+        HashMap<String, Long> timingMap1 = new HashMap<>();
+        timingMap1.put("Generated", 10L);
+        timingMap1.put("StartTime", 11L);
+        camera.setTimingMap(timingMap1);
         Tuple2<InputMetadata, CameraWithCube> tuple2 = new Tuple2(inputMeta, camera);
 
         ByteBuffer byteBuf = schema.serialize(tuple2);
